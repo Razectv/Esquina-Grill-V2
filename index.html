@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Balcão - Esquina Grill</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
+
+body{
+  background:#050505;
+  color:white;
+  padding:20px;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+  border-bottom:2px solid #d4a937;
+  padding-bottom:15px;
+}
+
+.logo{
+  color:#d4a937;
+  font-size:32px;
+  font-weight:bold;
+}
+
+.status{
+  background:#111;
+  border:1px solid #333;
+  padding:10px 18px;
+  border-radius:12px;
+}
+
+.painel{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:20px;
+}
+
+.coluna{
+  background:#0f0f0f;
+  border:1px solid #222;
+  border-radius:20px;
+  padding:15px;
+}
+
+.coluna h2{
+  margin-bottom:18px;
+  color:#d4a937;
+}
+
+.pedido{
+  background:#151515;
+  border:1px solid #2b2b2b;
+  border-radius:18px;
+  padding:15px;
+  margin-bottom:15px;
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:12px;
+}
+
+.mesa{
+  font-size:22px;
+  font-weight:bold;
+}
+
+.hora{
+  color:#999;
+}
+
+.item{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:8px;
+}
+
+.total{
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid #333;
+  display:flex;
+  justify-content:space-between;
+  font-size:18px;
+  font-weight:bold;
+}
+
+.botoes{
+  display:flex;
+  gap:10px;
+  margin-top:15px;
+}
+
+.btn{
+  flex:1;
+  border:none;
+  padding:12px;
+  border-radius:12px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.preparo{
+  background:#d4a937;
+  color:black;
+}
+
+.pronto{
+  background:#1f9d47;
+  color:white;
+}
+
+.finalizado{
+  background:#444;
+  color:white;
+}
+
+.empty{
+  text-align:center;
+  padding:30px;
+  color:#777;
+}
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">🍽️ Painel do Balcão</div>
+<button class="btn btn-primary" onclick="window.location.href='pedidos.html'">Ir para Página de Pedidos</button>
+  <div class="status">Firebase Online</div>
+</div>
+
+<div class="painel">
+
+  <div class="coluna">
+    <h2>🆕 Novos Pedidos</h2>
+    <div id="novos"></div>
+  </div>
+
+  <div class="coluna">
+    <h2>👨‍🍳 Em Preparo</h2>
+    <div id="preparo"></div>
+  </div>
+
+  <div class="coluna">
+    <h2>✅ Prontos</h2>
+    <div id="prontos"></div>
+  </div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  onSnapshot,
+  updateDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBWy83v0Q9M2GhZk_FRi4JWfvs_EGJ7WH4",
+  authDomain: "esquina-grill-v2.firebaseapp.com",
+  databaseURL: "https://esquina-grill-v2-default-rtdb.firebaseio.com",
+  projectId: "esquina-grill-v2",
+  storageBucket: "esquina-grill-v2.firebasestorage.app",
+  messagingSenderId: "767057341995",
+  appId: "1:767057341995:web:e4df055c70b25ad714446e",
+  measurementId: "G-KB4HDRWFDS"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const novosDiv = document.getElementById('novos');
+const preparoDiv = document.getElementById('preparo');
+const prontosDiv = document.getElementById('prontos');
+
+function criarPedido(pedido,id){
+
+  let itensHTML = '';
+
+  pedido.itens.forEach(item=>{
+
+    itensHTML += `
+      <div class="item">
+        <span>${item.nome} x${item.qtd}</span>
+        <span>R$ ${(item.preco * item.qtd).toFixed(2).replace('.',',')}</span>
+      </div>
+    `;
+
+  });
+
+  let botoes = '';
+
+  if(pedido.status === 'novo'){
+
+    botoes = `
+      <div class="botoes">
+        <button class="btn preparo" onclick="mudarStatus('${id}','preparo')">
+          Iniciar
+        </button>
+      </div>
+    `;
+
+  }
+
+  if(pedido.status === 'preparo'){
+
+    botoes = `
+      <div class="botoes">
+        <button class="btn pronto" onclick="mudarStatus('${id}','pronto')">
+          Marcar Pronto
+        </button>
+      </div>
+    `;
+
+  }
+
+  if(pedido.status === 'pronto'){
+
+    botoes = `
+      <div class="botoes">
+        <button class="btn finalizado" onclick="mudarStatus('${id}','finalizado')">
+          Finalizar
+        </button>
+      </div>
+    `;
+
+  }
+
+  return `
+
+  <div class="pedido">
+
+    <div class="top">
+      <div class="mesa">Mesa ${pedido.mesa}</div>
+      <div class="hora">${pedido.horario}</div>
+    </div>
+
+    ${itensHTML}
+
+    <div class="total">
+      <span>Total</span>
+      <span>R$ ${pedido.total.toFixed(2).replace('.',',')}</span>
+    </div>
+
+    ${botoes}
+
+  </div>
+
+  `;
+
+}
+
+window.mudarStatus = async function(id,status){
+
+  const pedidoRef = doc(db,'pedidos',id);
+
+  await updateDoc(pedidoRef,{status});
+
+}
+
+onSnapshot(collection(db,'pedidos'),(snapshot)=>{
+
+  novosDiv.innerHTML='';
+  preparoDiv.innerHTML='';
+  prontosDiv.innerHTML='';
+
+  if(snapshot.empty){
+
+    novosDiv.innerHTML = '<div class="empty">Nenhum pedido</div>';
+    preparoDiv.innerHTML = '<div class="empty">Nenhum pedido</div>';
+    prontosDiv.innerHTML = '<div class="empty">Nenhum pedido</div>';
+
+    return;
+  }
+
+  snapshot.forEach((docSnap)=>{
+
+    const pedido = docSnap.data();
+    const id = docSnap.id;
+
+    const html = criarPedido(pedido,id);
+
+    if(pedido.status === 'novo'){
+      novosDiv.innerHTML += html;
+    }
+
+    if(pedido.status === 'preparo'){
+      preparoDiv.innerHTML += html;
+    }
+
+    if(pedido.status === 'pronto'){
+      prontosDiv.innerHTML += html;
+    }
+
+  });
+
+});
+
+</script>
+
+</body>
+</html>
