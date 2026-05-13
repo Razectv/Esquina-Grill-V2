@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Gestão - MesaFlow</title>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+
+background:
+linear-gradient(rgba(0,0,0,0.92),rgba(0,0,0,0.95)),
+url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1400&auto=format&fit=crop');
+
+background-size:cover;
+background-position:center;
+background-attachment:fixed;
+
+color:white;
+padding:15px;
+
+}
+
+.header{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:15px;
+margin-bottom:25px;
+
+}
+
+.logo{
+
+font-size:34px;
+font-weight:bold;
+color:#ffb300;
+
+}
+
+.sub{
+
+margin-top:5px;
+color:#ccc;
+
+}
+
+.btnPortal{
+
+background:#ffb300;
+color:black;
+padding:12px 18px;
+border-radius:12px;
+font-weight:bold;
+text-decoration:none;
+
+}
+
+.filtros{
+
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+margin-bottom:20px;
+align-items:center;
+
+}
+
+.filtros input{
+
+padding:10px;
+border:none;
+border-radius:10px;
+font-size:14px;
+height:42px;
+
+}
+
+.btnFiltrar,
+.btnPrint,
+.btnImage{
+
+border:none;
+padding:10px 14px;
+border-radius:10px;
+font-weight:bold;
+cursor:pointer;
+height:42px;
+font-size:14px;
+
+}
+
+.btnFiltrar{
+
+background:#00b7ff;
+color:white;
+
+}
+
+.btnPrint{
+
+background:#1cff1c;
+color:black;
+
+}
+
+.btnImage{
+
+background:#ffb300;
+color:black;
+
+}
+
+.btnLimpar{
+
+background:#2a2a2a;
+color:#888;
+border:none;
+
+padding:10px 14px;
+
+border-radius:10px;
+
+font-size:13px;
+
+cursor:pointer;
+
+transition:0.2s;
+
+}
+
+.btnLimpar:hover{
+
+background:#ff4d4d;
+color:white;
+
+}
+
+.cards{
+
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:15px;
+
+}
+
+.card{
+
+background:rgba(255,255,255,0.06);
+backdrop-filter:blur(10px);
+
+padding:22px;
+border-radius:22px;
+
+border:1px solid rgba(255,255,255,0.08);
+
+}
+
+.card h2{
+
+font-size:17px;
+margin-bottom:12px;
+color:#ccc;
+
+}
+
+.valor{
+
+font-size:30px;
+font-weight:bold;
+color:#1cff1c;
+
+}
+
+.orange .valor{
+color:#ffb300;
+}
+
+.blue .valor{
+color:#00b7ff;
+}
+
+.red .valor{
+color:#ff4d4d;
+}
+
+.painel{
+
+margin-top:25px;
+
+background:rgba(255,255,255,0.05);
+
+padding:20px;
+border-radius:25px;
+
+border:1px solid rgba(255,255,255,0.08);
+
+}
+
+.painel h2{
+
+margin-bottom:18px;
+color:#ffb300;
+
+}
+
+.tabela{
+
+display:flex;
+flex-direction:column;
+gap:12px;
+
+}
+
+.topoTabela,
+.linha{
+
+display:grid;
+grid-template-columns:1fr 1fr 1fr 1fr;
+
+padding:12px;
+
+border-radius:12px;
+
+}
+
+.topoTabela{
+
+background:#ffb300;
+color:black;
+font-weight:bold;
+
+}
+
+.linha{
+
+background:rgba(255,255,255,0.04);
+
+}
+
+.statusOnline{
+
+margin-top:25px;
+
+background:rgba(255,255,255,0.05);
+
+padding:18px;
+
+border-radius:20px;
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:15px;
+
+}
+
+.online{
+
+color:#1cff1c;
+
+}
+
+@media(max-width:768px){
+
+.logo{
+
+font-size:26px;
+
+}
+
+.filtros{
+
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:8px;
+
+}
+
+.filtros input{
+
+width:100%;
+
+}
+
+.btnFiltrar,
+.btnPrint,
+.btnImage,
+.btnLimpar{
+
+width:100%;
+
+}
+
+.topoTabela,
+.linha{
+
+font-size:11px;
+
+}
+
+.valor{
+
+font-size:24px;
+
+}
+
+.btnPortal{
+
+width:100%;
+text-align:center;
+
+}
+
+body{
+
+padding:12px;
+
+}
+
+}
+
+@media print{
+
+body{
+
+background:white;
+color:black;
+
+}
+
+.btnPortal,
+.filtros,
+.statusOnline{
+
+display:none;
+
+}
+
+.card,
+.painel{
+
+border:1px solid #ccc;
+
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="relatorio">
+
+<div class="header">
+
+<div>
+
+<div class="logo">
+📊 Gestão - MesaFlow
+</div>
+
+<div class="sub">
+Espetinho Grill • Painel Administrativo
+</div>
+
+</div>
+
+<a href="index.html" class="btnPortal">
+⬅ Voltar ao Portal
+</a>
+
+</div>
+
+<!-- FILTROS -->
+
+<div class="filtros">
+
+<input type="date" id="dataInicial">
+
+<input type="date" id="dataFinal">
+
+<button class="btnFiltrar"
+onclick="filtrarPedidos()">
+
+🔍 Filtrar
+
+</button>
+
+<button class="btnPrint"
+onclick="imprimirRelatorio()">
+
+🖨️ Imprimir
+
+</button>
+
+<button class="btnImage"
+onclick="gerarImagem()">
+
+📸 Imagem
+
+</button>
+
+<button class="btnLimpar"
+onclick="limparHistorico()">
+
+🗑 Limpar
+
+</button>
+
+</div>
+
+<!-- CARDS -->
+
+<div class="cards">
+
+<div class="card">
+
+<h2>💰 Vendas Totais</h2>
+
+<div class="valor" id="vendasHoje">
+R$ 0,00
+</div>
+
+</div>
+
+<div class="card orange">
+
+<h2>🧾 Pedidos</h2>
+
+<div class="valor" id="pedidosHoje">
+0
+</div>
+
+</div>
+
+<div class="card blue">
+
+<h2>📈 Ticket Médio</h2>
+
+<div class="valor" id="ticketMedio">
+R$ 0,00
+</div>
+
+</div>
+
+<div class="card red">
+
+<h2>🔥 Produto Mais Vendido</h2>
+
+<div class="valor" id="produtoMais">
+Nenhum
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>🍳 Pedidos Abertos</h2>
+
+<div class="valor" id="pedidosAbertos">
+0
+</div>
+
+</div>
+
+</div>
+
+<!-- TABELA -->
+
+<div class="painel">
+
+<h2>
+📋 Extrato de Pedidos
+</h2>
+
+<div class="tabela">
+
+<div class="topoTabela">
+
+<div>Mesa</div>
+<div>Total</div>
+<div>Status</div>
+<div>Data</div>
+
+</div>
+
+<div id="tabelaPedidos"></div>
+
+</div>
+
+</div>
+
+<!-- STATUS -->
+
+<div class="statusOnline">
+
+<div>
+
+<h3 id="statusSistema" class="online">
+🟢 Sistema Online
+</h3>
+
+<p id="textoStatus">
+Todos os serviços funcionando normalmente.
+</p>
+
+</div>
+
+<div id="horaAtual"></div>
+
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+onSnapshot,
+getDocs,
+deleteDoc,
+doc
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyBWy83v0Q9M2GhZk_FRi4JWfvs_EGJ7WH4",
+authDomain: "esquina-grill-v2.firebaseapp.com",
+projectId: "esquina-grill-v2",
+storageBucket: "esquina-grill-v2.firebasestorage.app",
+messagingSenderId: "767057341995",
+appId: "1:767057341995:web:e4df055c70b25ad714446e"
+
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const pedidosRef = collection(db,"pedidos");
+
+let todosPedidos = [];
+
+window.filtrarPedidos = filtrarPedidos;
+window.imprimirRelatorio = imprimirRelatorio;
+window.gerarImagem = gerarImagem;
+window.limparHistorico = limparHistorico;
+
+onSnapshot(pedidosRef,(snapshot)=>{
+
+todosPedidos = [];
+
+snapshot.forEach((doc)=>{
+
+todosPedidos.push(doc.data());
+
+});
+
+filtrarPedidos();
+
+});
+
+function filtrarPedidos(){
+
+const dataInicial =
+document.getElementById('dataInicial').value;
+
+const dataFinal =
+document.getElementById('dataFinal').value;
+
+let pedidosFiltrados = [...todosPedidos];
+
+if(dataInicial){
+
+const inicio = new Date(dataInicial);
+inicio.setHours(0,0,0,0);
+
+pedidosFiltrados =
+pedidosFiltrados.filter((pedido)=>{
+
+if(!pedido.timestamp) return false;
+
+const dataPedido =
+new Date(pedido.timestamp);
+
+return dataPedido >= inicio;
+
+});
+
+}
+
+if(dataFinal){
+
+const final = new Date(dataFinal);
+final.setHours(23,59,59,999);
+
+pedidosFiltrados =
+pedidosFiltrados.filter((pedido)=>{
+
+if(!pedido.timestamp) return false;
+
+const dataPedido =
+new Date(pedido.timestamp);
+
+return dataPedido <= final;
+
+});
+
+}
+
+atualizarDashboard(pedidosFiltrados);
+
+}
+
+function atualizarDashboard(pedidos){
+
+let totalVendas = 0;
+let totalPedidos = 0;
+let pedidosAbertos = 0;
+
+let produtosVendidos = {};
+
+pedidos.forEach((pedido)=>{
+
+totalPedidos++;
+
+totalVendas += Number(pedido.total || 0);
+
+if(pedido.status !== 'finalizado'){
+
+pedidosAbertos++;
+
+}
+
+if(pedido.itens){
+
+pedido.itens.forEach((item)=>{
+
+if(!produtosVendidos[item.nome]){
+
+produtosVendidos[item.nome] = 0;
+
+}
+
+produtosVendidos[item.nome] += item.qtd || 1;
+
+});
+
+}
+
+});
+
+let produtoMaisVendido = 'Nenhum';
+let maior = 0;
+
+for(let produto in produtosVendidos){
+
+if(produtosVendidos[produto] > maior){
+
+maior = produtosVendidos[produto];
+produtoMaisVendido = produto;
+
+}
+
+}
+
+const ticketMedio =
+totalPedidos > 0
+? totalVendas / totalPedidos
+: 0;
+
+document.getElementById('vendasHoje').innerHTML =
+'R$ ' + totalVendas.toFixed(2).replace('.',',');
+
+document.getElementById('pedidosHoje').innerHTML =
+totalPedidos;
+
+document.getElementById('ticketMedio').innerHTML =
+'R$ ' + ticketMedio.toFixed(2).replace('.',',');
+
+document.getElementById('produtoMais').innerHTML =
+produtoMaisVendido;
+
+document.getElementById('pedidosAbertos').innerHTML =
+pedidosAbertos;
+
+renderTabela(pedidos);
+
+}
+
+function renderTabela(pedidos){
+
+const tabela =
+document.getElementById('tabelaPedidos');
+
+tabela.innerHTML = '';
+
+pedidos.reverse().forEach((pedido)=>{
+
+const div =
+document.createElement('div');
+
+div.className = 'linha';
+
+const data =
+pedido.timestamp
+? new Date(pedido.timestamp).toLocaleDateString('pt-BR')
+: '--';
+
+div.innerHTML = `
+
+<div>${pedido.mesa || '--'}</div>
+
+<div>
+R$ ${(pedido.total || 0)
+.toFixed(2)
+.replace('.',',')}
+</div>
+
+<div>${pedido.status || 'novo'}</div>
+
+<div>${data}</div>
+
+`;
+
+tabela.appendChild(div);
+
+});
+
+}
+
+function imprimirRelatorio(){
+
+window.print();
+
+}
+
+async function gerarImagem(){
+
+const area =
+document.getElementById('relatorio');
+
+const canvas =
+await html2canvas(area);
+
+const link =
+document.createElement('a');
+
+link.download =
+'relatorio-mesaflow.png';
+
+link.href =
+canvas.toDataURL();
+
+link.click();
+
+}
+
+async function limparHistorico(){
+
+const pin =
+prompt('Digite o PIN');
+
+if(pin !== '12345'){
+
+alert('PIN incorreto!');
+return;
+
+}
+
+const confirmar =
+confirm('Deseja apagar TODOS os pedidos?');
+
+if(!confirmar) return;
+
+try{
+
+const snapshot =
+await getDocs(collection(db,'pedidos'));
+
+for(const item of snapshot.docs){
+
+await deleteDoc(
+doc(db,'pedidos',item.id)
+);
+
+}
+
+alert('Histórico apagado com sucesso!');
+
+}catch(erro){
+
+alert('Erro ao apagar histórico');
+
+console.log(erro);
+
+}
+
+}
+
+const agora = new Date();
+
+document.getElementById('horaAtual').innerHTML =
+
+agora.toLocaleDateString('pt-BR') +
+' • ' +
+agora.toLocaleTimeString('pt-BR');
+
+function verificarInternet(){
+
+const status =
+document.getElementById('statusSistema');
+
+const texto =
+document.getElementById('textoStatus');
+
+if(navigator.onLine){
+
+status.innerHTML =
+'🟢 Sistema Online';
+
+status.style.color =
+'#1cff1c';
+
+texto.innerHTML =
+'Todos os serviços funcionando normalmente.';
+
+}else{
+
+status.innerHTML =
+'🔴 Sem Internet';
+
+status.style.color =
+'#ff4d4d';
+
+texto.innerHTML =
+'O dispositivo está sem conexão com a internet.';
+
+}
+
+}
+
+verificarInternet();
+
+setInterval(verificarInternet,1000);
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MesaFlow - Sistema Restaurante</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:
+    linear-gradient(rgba(0,0,0,0.88),rgba(0,0,0,0.92)),
+    url('https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1400&auto=format&fit=crop');
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+    color:white;
+    min-height:100vh;
+    padding:20px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+}
+
+.logo-area{
+    text-align:center;
+    margin-top:20px;
+}
+
+.logo-area h1{
+    font-size:70px;
+    font-weight:bold;
+    background:linear-gradient(90deg,#ff9d00,#5eff00);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.logo-area p{
+    margin-top:10px;
+    color:#ddd;
+    font-size:22px;
+}
+
+.restaurant-logo{
+    margin-top:35px;
+}
+
+.restaurant-logo h2{
+    font-size:60px;
+    color:#ffb300;
+    text-shadow:0 0 20px rgba(255,174,0,0.5);
+}
+
+.welcome{
+    text-align:center;
+    margin-top:50px;
+}
+
+.welcome h3{
+    font-size:40px;
+    margin-bottom:10px;
+}
+
+.welcome p{
+    color:#ccc;
+    font-size:20px;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:25px;
+    margin-top:50px;
+}
+
+.card{
+    backdrop-filter:blur(10px);
+    background:rgba(255,255,255,0.05);
+    border-radius:25px;
+    padding:35px 25px;
+    text-align:center;
+    border:2px solid rgba(255,255,255,0.08);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+
+.icon{
+    font-size:70px;
+    margin-bottom:20px;
+}
+
+.card h2{
+    font-size:38px;
+    margin-bottom:15px;
+}
+
+.card p{
+    color:#ccc;
+    font-size:18px;
+    line-height:28px;
+    min-height:70px;
+}
+
+.btn{
+    display:inline-block;
+    margin-top:30px;
+    padding:18px 40px;
+    border-radius:16px;
+    text-decoration:none;
+    color:white;
+    font-size:22px;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+.btn:hover{
+    transform:scale(1.05);
+}
+
+.green{
+    border-color:#39ff14;
+    box-shadow:0 0 20px rgba(57,255,20,0.2);
+}
+
+.green .btn{
+    background:#1cff1c;
+    color:black;
+}
+
+.orange{
+    border-color:#ff9900;
+    box-shadow:0 0 20px rgba(255,153,0,0.2);
+}
+
+.orange .btn{
+    background:#ff9900;
+}
+
+.blue{
+    border-color:#008cff;
+    box-shadow:0 0 20px rgba(0,140,255,0.2);
+}
+
+.blue .btn{
+    background:#008cff;
+}
+
+.status{
+    margin-top:60px;
+    background:rgba(255,255,255,0.05);
+    border-radius:25px;
+    padding:30px;
+    border:1px solid rgba(255,255,255,0.08);
+}
+
+.status h2{
+    margin-bottom:25px;
+    font-size:30px;
+}
+
+.status-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+.status-box{
+    background:rgba(255,255,255,0.04);
+    border-radius:18px;
+    padding:20px;
+}
+
+.status-box h3{
+    margin-bottom:10px;
+    color:#1cff1c;
+}
+
+.features{
+    margin-top:50px;
+    background:rgba(255,255,255,0.05);
+    border-radius:25px;
+    padding:30px;
+    border:1px solid rgba(255,255,255,0.08);
+}
+
+.features-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:25px;
+}
+
+.feature{
+    text-align:center;
+}
+
+.feature span{
+    font-size:50px;
+    display:block;
+    margin-bottom:15px;
+}
+
+.feature h3{
+    margin-bottom:10px;
+}
+
+.feature p{
+    color:#ccc;
+    line-height:24px;
+}
+
+footer{
+    margin-top:60px;
+    text-align:center;
+    color:#aaa;
+    padding-bottom:30px;
+}
+
+.version{
+    margin-top:15px;
+    display:inline-block;
+    background:rgba(255,255,255,0.08);
+    padding:10px 20px;
+    border-radius:14px;
+}
+
+@media(max-width:768px){
+
+.logo-area h1{
+    font-size:48px;
+}
+
+.restaurant-logo h2{
+    font-size:42px;
+}
+
+.welcome h3{
+    font-size:30px;
+}
+
+.card h2{
+    font-size:30px;
+}
+
+.btn{
+    width:100%;
+}
+
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="logo-area">
+        <h1>🍽️ MesaFlow</h1>
+        <p>Sistema de Gestão para Restaurantes</p>
+
+        <div class="restaurant-logo">
+            <h2>🔥 Espetinho Grill</h2>
+        </div>
+    </div>
+
+    <div class="welcome">
+        <h3>Bem-vindo ao sistema do restaurante!</h3>
+        <p>Escolha abaixo o setor que deseja acessar.</p>
+    </div>
+
+    <div class="cards">
+
+        <div class="card green">
+            <div class="icon">🧑‍🍳</div>
+            <h2>ATENDENTE</h2>
+
+            <p>
+                Faça pedidos e envie diretamente para a cozinha em tempo real.
+            </p>
+
+            <a href="pedidos.html" class="btn">
+                ACESSAR
+            </a>
+        </div>
+
+        <div class="card orange">
+            <div class="icon">🍔</div>
+            <h2>BALCÃO</h2>
+
+            <p>
+                Gerencie os pedidos e acompanhe o preparo do restaurante.
+            </p>
+
+            <a href="balcao.html" class="btn">
+                ACESSAR
+            </a>
+        </div>
+
+        <div class="card blue">
+            <div class="icon">📊</div>
+            <h2>GESTÃO</h2>
+
+            <p>
+                Relatórios, vendas, controle e informações administrativas.
+            </p>
+
+            <a href="gestao.html" class="btn">
+                ACESSAR
+            </a>
+        </div>
+
+    </div>
+
+    <div class="status">
+
+        <h2>📡 Status do Sistema</h2>
+
+        <div class="status-grid">
+
+            <div class="status-box">
+                <h3 id="statusSistema">🟢 Sistema Online</h3>
+
+<p id="textoStatus">
+    Todos os serviços funcionando normalmente.
+</p>
+            </div>
+
+            <div class="status-box">
+                <h3>⏰ Última atualização</h3>
+                <p id="horaAtual"></p>
+            </div>
+
+            <div class="status-box">
+                <h3>👥 Usuários online</h3>
+                <p>5 usuários conectados</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="features">
+
+        <div class="features-grid">
+
+            <div class="feature">
+                <span>🔒</span>
+                <h3>Seguro</h3>
+                <p>Seus dados protegidos com segurança.</p>
+            </div>
+
+            <div class="feature">
+                <span>⚡</span>
+                <h3>Rápido</h3>
+                <p>Sistema leve e em tempo real.</p>
+            </div>
+
+            <div class="feature">
+                <span>☁️</span>
+                <h3>Na Nuvem</h3>
+                <p>Acesse de qualquer dispositivo.</p>
+            </div>
+
+            <div class="feature">
+                <span>🎧</span>
+                <h3>Suporte</h3>
+                <p>Equipe pronta para ajudar.</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <footer>
+
+        <p>
+            © 2025 MesaFlow - Sistema de Gestão para Restaurantes
+        </p>
+
+        <p style="margin-top:10px;">
+            Desenvolvido com ❤️ para facilitar o dia a dia.
+        </p>
+
+        <div class="version">
+            Versão 1.0.0
+        </div>
+
+    </footer>
+
+</div>
+
+<script>
+
+const agora = new Date();
+
+document.getElementById('horaAtual').innerHTML =
+agora.toLocaleDateString('pt-BR') +
+' - ' +
+agora.toLocaleTimeString('pt-BR');
+function verificarInternet(){
+
+    const status = document.getElementById('statusSistema');
+    const texto = document.getElementById('textoStatus');
+
+    if(navigator.onLine){
+
+        status.innerHTML = '🟢 Sistema Online';
+        status.style.color = '#1cff1c';
+
+        texto.innerHTML =
+        'Todos os serviços funcionando normalmente.';
+
+    }else{
+
+        status.innerHTML = '🔴 Sem Internet';
+        status.style.color = '#ff3b3b';
+
+        texto.innerHTML =
+        'O dispositivo está sem conexão com a internet.';
+
+    }
+
+}
+
+verificarInternet();
+
+setInterval(verificarInternet,1000);
+</script>
+
+</body>
+</html>
