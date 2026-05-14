@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Balcão - Esquina Grill</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+html,body{
+touch-action:manipulation;
+}
+
+body{
+background:#0b0b0b;
+color:white;
+padding:15px;
+}
+
+/* HEADER */
+
+.header{
+margin-bottom:20px;
+}
+
+.logo{
+font-size:32px;
+font-weight:bold;
+color:#d4a937;
+margin-bottom:8px;
+}
+
+.sub{
+color:#999;
+margin-bottom:15px;
+}
+
+.btnPortal{
+
+display:inline-flex;
+align-items:center;
+justify-content:center;
+
+padding:12px 18px;
+
+background:#d4a937;
+color:black;
+
+text-decoration:none;
+
+border-radius:14px;
+
+font-weight:bold;
+
+font-size:15px;
+
+margin-bottom:15px;
+
+}
+
+.statusSistema{
+
+margin-top:15px;
+
+padding:12px;
+
+border-radius:14px;
+
+background:#123d12;
+
+color:#42ff42;
+
+font-weight:bold;
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+flex-wrap:wrap;
+gap:10px;
+
+}
+
+/* LISTAS */
+
+.listaPedidos{
+
+display:flex;
+flex-direction:column;
+gap:15px;
+
+margin-bottom:30px;
+
+}
+
+/* PEDIDO */
+
+.pedido{
+
+background:#111;
+
+border-radius:20px;
+
+padding:15px;
+
+border:1px solid #2a2a2a;
+
+}
+
+.alerta{
+
+animation:piscando 1s infinite;
+
+}
+
+@keyframes piscando{
+
+0%{
+border-color:#ff4444;
+}
+
+50%{
+border-color:#ffffff;
+}
+
+100%{
+border-color:#ff4444;
+}
+
+}
+
+.topPedido{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:15px;
+
+}
+
+.mesa{
+
+font-size:28px;
+
+font-weight:bold;
+
+color:#d4a937;
+
+}
+
+.hora{
+
+font-size:14px;
+
+color:#aaa;
+
+}
+
+.itens{
+
+margin-bottom:15px;
+
+}
+
+.item{
+
+padding:10px 0;
+
+border-bottom:1px solid #2a2a2a;
+
+font-size:16px;
+
+}
+
+/* STATUS */
+
+.status{
+
+display:flex;
+
+flex-direction:column;
+
+gap:8px;
+
+margin-bottom:15px;
+
+font-size:15px;
+
+}
+
+.ok{
+color:#42ff42;
+}
+
+.erro{
+color:#ff4444;
+}
+
+.pendente{
+color:#ffc107;
+}
+
+/* BOTÕES */
+
+.botoes{
+
+display:flex;
+
+flex-direction:column;
+
+gap:10px;
+
+}
+
+.btn{
+
+height:50px;
+
+border:none;
+
+border-radius:14px;
+
+font-size:16px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+}
+
+.print{
+background:#00b7ff;
+color:white;
+}
+
+.finalizar{
+background:#1f9d47;
+color:white;
+}
+
+.pagar{
+background:#d4a937;
+color:black;
+}
+
+.titulo{
+
+font-size:24px;
+margin-bottom:15px;
+font-weight:bold;
+
+}
+
+/* RESPONSIVO */
+
+@media(max-width:768px){
+
+.logo{
+font-size:26px;
+}
+
+}
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+
+<div class="header">
+
+<div class="logo">
+🍽️ Balcão - Esquina Grill
+</div>
+
+<div class="sub">
+Central Operacional • MesaFlow
+</div>
+
+<a href="index.html" class="btnPortal">
+⬅ Voltar ao Portal
+</a>
+
+<div class="statusSistema">
+
+<span id="internet">
+🟢 Sistema Online
+</span>
+
+<span id="horaAtual"></span>
+
+</div>
+
+</div>
+
+<!-- PEDIDOS -->
+
+<div class="titulo">
+📋 Pedidos
+</div>
+
+<div class="listaPedidos"
+id="listaPedidos"></div>
+
+<!-- FINALIZADOS -->
+
+<div class="titulo"
+style="color:#42ff42;">
+
+✅ Finalizados
+
+</div>
+
+<div class="listaPedidos"
+id="listaFinalizados"></div>
+
+<!-- SOM -->
+
+<audio id="somPedido">
+
+<source
+src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
+type="audio/ogg">
+
+</audio>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+import {
+
+getFirestore,
+collection,
+onSnapshot,
+doc,
+updateDoc,
+getDoc
+
+}
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+/* FIREBASE */
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyBWy83v0Q9M2GhZk_FRi4JWfvs_EGJ7WH4",
+
+authDomain: "esquina-grill-v2.firebaseapp.com",
+
+projectId: "esquina-grill-v2",
+
+storageBucket: "esquina-grill-v2.firebasestorage.app",
+
+messagingSenderId: "767057341995",
+
+appId: "1:767057341995:web:e4df055c70b25ad714446e"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+const pedidosRef =
+collection(db,'pedidos');
+
+const listaPedidos =
+document.getElementById('listaPedidos');
+
+const listaFinalizados =
+document.getElementById('listaFinalizados');
+
+let primeiroCarregamento = true;
+
+/* ESCUTAR */
+
+onSnapshot(pedidosRef,(snapshot)=>{
+
+let pedidos=[];
+
+snapshot.forEach((docSnap)=>{
+
+pedidos.push({
+
+id:docSnap.id,
+...docSnap.data()
+
+});
+
+});
+
+renderPedidos(pedidos);
+
+if(!primeiroCarregamento){
+
+document
+.getElementById('somPedido')
+.play();
+
+}
+
+primeiroCarregamento = false;
+
+});
+
+/* RENDER */
+
+function renderPedidos(pedidos){
+
+listaPedidos.innerHTML='';
+
+listaFinalizados.innerHTML='';
+
+pedidos.reverse().forEach((pedido)=>{
+
+if(pedido.status === 'pago'){
+return;
+}
+
+if(pedido.status === 'finalizado'){
+
+listaFinalizados.appendChild(
+criarPedidoFinalizado(pedido)
+);
+
+}else{
+
+listaPedidos.appendChild(
+criarPedido(pedido)
+);
+
+}
+
+});
+
+}
+
+/* PEDIDO NORMAL */
+
+function criarPedido(pedido){
+
+const div =
+document.createElement('div');
+
+div.className = 'pedido';
+
+if(
+pedido.impressaoCozinha === 'erro'
+||
+pedido.impressaoChurrasqueira === 'erro'
+){
+
+div.classList.add('alerta');
+
+}
+
+let itensHTML='';
+
+pedido.itens.forEach(item=>{
+
+itensHTML += `
+
+<div class="item">
+
+${item.nome} x${item.qtd}
+
+${
+item.adicionais
+&&
+item.adicionais.length > 0
+
+?
+
+'<br><small style="color:#d4a937;">+ '
++
+item.adicionais.join(', ')
++
+'</small>'
+
+:
+
+''
+
+}
+
+</div>
+
+`;
+
+});
+
+div.innerHTML = `
+
+<div class="topPedido">
+
+<div class="mesa">
+Mesa ${pedido.mesa}
+</div>
+
+<div class="hora">
+${pedido.horario || '--'}
+</div>
+
+</div>
+
+<div class="itens">
+
+${itensHTML}
+
+</div>
+
+<div class="status">
+
+<div class="${
+pedido.impressaoCozinha === 'impresso'
+? 'ok'
+:
+pedido.impressaoCozinha === 'erro'
+? 'erro'
+:
+'pendente'
+}">
+
+🍳 Cozinha →
+${pedido.impressaoCozinha || 'pendente'}
+
+</div>
+
+<div class="${
+pedido.impressaoChurrasqueira === 'impresso'
+? 'ok'
+:
+pedido.impressaoChurrasqueira === 'erro'
+? 'erro'
+:
+'pendente'
+}">
+
+🔥 Churrasqueira →
+${pedido.impressaoChurrasqueira || 'pendente'}
+
+</div>
+
+</div>
+
+<div class="botoes">
+
+<button
+class="btn print"
+onclick="imprimirCozinha('${pedido.id}')">
+
+🖨️ Imprimir Cozinha
+
+</button>
+
+<button
+class="btn print"
+onclick="imprimirChurrasqueira('${pedido.id}')">
+
+🖨️ Imprimir Churrasqueira
+
+</button>
+
+<button
+class="btn finalizar"
+onclick="finalizarPedido('${pedido.id}')">
+
+✅ Finalizar Pedido
+
+</button>
+
+</div>
+
+`;
+
+return div;
+
+}
+
+/* FINALIZADO */
+
+function criarPedidoFinalizado(pedido){
+
+const div =
+document.createElement('div');
+
+div.className = 'pedido';
+
+let itensHTML='';
+
+pedido.itens.forEach(item=>{
+
+itensHTML += `
+
+<div class="item">
+
+${item.nome} x${item.qtd}
+
+</div>
+
+`;
+
+});
+
+div.innerHTML = `
+
+<div class="topPedido">
+
+<div class="mesa">
+Mesa ${pedido.mesa}
+</div>
+
+<div class="hora">
+${pedido.horario || '--'}
+</div>
+
+</div>
+
+<div class="itens">
+
+${itensHTML}
+
+</div>
+
+<div class="botoes">
+
+<button
+class="btn pagar"
+onclick="pagarPedido('${pedido.id}')">
+
+💰 Pedido Pago
+
+</button>
+
+</div>
+
+`;
+
+return div;
+
+}
+
+/* IMPRESSÃO */
+
+window.imprimirCozinha =
+async function(id){
+
+try{
+
+await updateDoc(doc(db,'pedidos',id),{
+
+impressaoCozinha:'impresso'
+
+});
+
+alert('Pedido enviado para cozinha');
+
+}catch(e){
+
+console.log(e);
+
+await updateDoc(doc(db,'pedidos',id),{
+
+impressaoCozinha:'erro'
+
+});
+
+}
+
+}
+
+window.imprimirChurrasqueira =
+async function(id){
+
+try{
+
+await updateDoc(doc(db,'pedidos',id),{
+
+impressaoChurrasqueira:'impresso'
+
+});
+
+alert('Pedido enviado churrasqueira');
+
+}catch(e){
+
+console.log(e);
+
+await updateDoc(doc(db,'pedidos',id),{
+
+impressaoChurrasqueira:'erro'
+
+});
+
+}
+
+}
+
+/* FINALIZAR */
+
+window.finalizarPedido =
+async function(id){
+
+await updateDoc(doc(db,'pedidos',id),{
+
+status:'finalizado'
+
+});
+
+}
+
+/* PAGAR */
+
+window.pagarPedido =
+async function(id){
+
+await updateDoc(doc(db,'pedidos',id),{
+
+status:'pago'
+
+});
+
+}
+
+/* HORA */
+
+function atualizarHora(){
+
+const agora = new Date();
+
+document
+.getElementById('horaAtual')
+.innerHTML =
+
+agora.toLocaleDateString('pt-BR')
++
+' • '
++
+agora.toLocaleTimeString('pt-BR');
+
+}
+
+setInterval(atualizarHora,1000);
+
+atualizarHora();
+
+/* INTERNET */
+
+function verificarInternet(){
+
+const internet =
+document.getElementById('internet');
+
+if(navigator.onLine){
+
+internet.innerHTML =
+'🟢 Sistema Online';
+
+internet.style.color =
+'#42ff42';
+
+}else{
+
+internet.innerHTML =
+'🔴 Sem Internet';
+
+internet.style.color =
+'#ff4444';
+
+}
+
+}
+
+setInterval(verificarInternet,1000);
+
+verificarInternet();
+
+</script>
+
+</body>
+</html>
