@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Pedidos - Esquina Grill</title>
+
+<style>
+
+html,body{
+touch-action:manipulation;
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+background:#0b0b0b;
+color:white;
+padding-bottom:120px;
+}
+
+/* HEADER */
+
+.header{
+position:sticky;
+top:0;
+z-index:999;
+background:#111;
+padding:15px;
+border-bottom:2px solid #d4a937;
+}
+
+.logo{
+font-size:28px;
+font-weight:bold;
+color:#d4a937;
+margin-bottom:12px;
+}
+
+.topo{
+display:flex;
+gap:10px;
+}
+
+.topo input{
+flex:1;
+height:45px;
+border:none;
+border-radius:12px;
+padding:10px;
+font-size:18px;
+text-align:center;
+}
+
+/* CATEGORIAS */
+
+.categorias{
+display:flex;
+overflow-x:auto;
+gap:10px;
+padding:12px;
+position:sticky;
+top:104px;
+z-index:998;
+background:#0b0b0b;
+}
+
+.categorias::-webkit-scrollbar{
+display:none;
+}
+
+.cat{
+min-width:max-content;
+padding:12px 18px;
+border:none;
+border-radius:14px;
+background:#1b1b1b;
+color:white;
+font-size:14px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.cat.active{
+background:#d4a937;
+color:black;
+}
+
+/* LISTA */
+
+.lista{
+padding:15px;
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+.card{
+background:#151515;
+border:1px solid #2a2a2a;
+border-radius:18px;
+padding:16px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+}
+
+.info h3{
+font-size:16px;
+margin-bottom:5px;
+}
+
+.preco{
+color:#d4a937;
+font-weight:bold;
+}
+
+.controles{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.btn{
+width:38px;
+height:38px;
+border:none;
+border-radius:12px;
+font-size:22px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.add{
+background:#1cff1c;
+color:black;
+}
+
+.remove{
+background:#ff3d3d;
+color:white;
+}
+
+.qtd{
+font-size:18px;
+font-weight:bold;
+min-width:20px;
+text-align:center;
+}
+
+/* CARRINHO */
+
+.cartBtn{
+position:fixed;
+bottom:15px;
+left:50%;
+transform:translateX(-50%);
+width:92%;
+background:#1f9d47;
+color:white;
+border:none;
+border-radius:18px;
+padding:18px;
+font-size:20px;
+font-weight:bold;
+z-index:999;
+}
+
+/* MODAL */
+
+.modal{
+position:fixed;
+bottom:-100%;
+left:0;
+width:100%;
+background:#111;
+border-top-left-radius:25px;
+border-top-right-radius:25px;
+padding:20px;
+transition:0.3s;
+z-index:1000;
+max-height:85vh;
+overflow-y:auto;
+}
+
+.modal.active{
+bottom:0;
+}
+
+.modalTop{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.close{
+width:40px;
+height:40px;
+border:none;
+border-radius:50%;
+background:#222;
+color:white;
+font-size:18px;
+}
+
+.item{
+display:flex;
+justify-content:space-between;
+padding:12px 0;
+border-bottom:1px solid #222;
+}
+
+.total{
+margin:20px 0;
+display:flex;
+justify-content:space-between;
+font-size:24px;
+font-weight:bold;
+}
+
+.send{
+width:100%;
+height:55px;
+border:none;
+border-radius:16px;
+background:#1f9d47;
+color:white;
+font-size:18px;
+font-weight:bold;
+margin-bottom:10px;
+}
+
+.clear{
+width:100%;
+height:50px;
+border:none;
+border-radius:16px;
+background:#2a2a2a;
+color:white;
+font-size:16px;
+}
+
+.status{
+margin-top:15px;
+padding:12px;
+text-align:center;
+border-radius:12px;
+display:none;
+}
+
+.ok{
+background:#123d12;
+color:#3cff3c;
+}
+
+.erro{
+background:#4a1111;
+color:#ff5d5d;
+}
+
+/* ADICIONAIS */
+
+.extra{
+
+display:flex;
+align-items:center;
+gap:12px;
+
+padding:14px;
+
+background:#1a1a1a;
+
+border-radius:14px;
+
+font-size:16px;
+
+margin-bottom:12px;
+
+}
+
+.extra input{
+
+width:20px;
+height:20px;
+
+}
+.saborBtn{
+
+width:100%;
+padding:16px;
+border:none;
+border-radius:14px;
+
+margin-bottom:10px;
+
+background:#d4a937;
+color:black;
+
+font-size:16px;
+font-weight:bold;
+
+cursor:pointer;
+
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+
+<div class="header">
+
+<div class="logo">
+🍽️ Esquina Grill
+</div>
+
+<div class="topo">
+<input type="number" id="mesa" placeholder="Mesa">
+</div>
+
+</div>
+
+<!-- CATEGORIAS -->
+
+<div class="categorias">
+
+<button class="cat active" onclick="filtrarCategoria('todos',this)">
+⭐ Todos
+</button>
+
+<button class="cat" onclick="filtrarCategoria('entradas',this)">
+🍽️ Entradas
+</button>
+
+<button class="cat" onclick="filtrarCategoria('espetosCompletos',this)">
+🍢 Completos
+</button>
+
+<button class="cat" onclick="filtrarCategoria('soEspetos',this)">
+🔥 Espetos
+</button>
+
+<button class="cat" onclick="filtrarCategoria('cervejas',this)">
+🍺 Cervejas
+</button>
+
+<button class="cat" onclick="filtrarCategoria('drinks',this)">
+🍸 Drinks
+</button>
+
+<button class="cat" onclick="filtrarCategoria('bebidas',this)">
+🥤 Bebidas
+</button>
+
+<button class="cat" onclick="filtrarCategoria('sucos',this)">
+🧃 Sucos
+</button>
+
+<button class="cat" onclick="filtrarCategoria('domingo',this)">
+🍲 Domingo
+</button>
+
+<button class="cat" onclick="filtrarCategoria('sobremesas',this)">
+🍰 Sobremesas
+</button>
+
+</div>
+
+<!-- LISTA -->
+
+<div class="lista" id="listaProdutos"></div>
+
+<!-- BOTÃO CARRINHO -->
+
+<button class="cartBtn" onclick="abrirCarrinho()">
+🛒 <span id="cartText">0 itens • R$ 0,00</span>
+</button>
+
+<!-- MODAL CARRINHO -->
+
+<div class="modal" id="modal">
+
+<div class="modalTop">
+
+<h2>🛒 Pedido</h2>
+
+<button class="close" onclick="fecharCarrinho()">
+✕
+</button>
+
+</div>
+
+<div id="itens"></div>
+
+<div class="total">
+
+<span>Total</span>
+
+<span id="total">
+R$ 0,00
+</span>
+
+</div>
+
+<button class="send" onclick="enviarPedido()">
+📤 Enviar Pedido
+</button>
+
+<button class="clear" onclick="limparCarrinho()">
+🗑️ Limpar Pedido
+</button>
+
+<div class="status" id="status"></div>
+
+</div>
+
+<!-- MODAL ADICIONAIS -->
+
+<div class="modal" id="modalAdicionais">
+
+<div class="modalTop">
+
+<h2>
+🍢 Adicionais
+</h2>
+
+<button class="close"
+onclick="fecharAdicionais()">
+
+✕
+
+</button>
+
+</div>
+
+<label class="extra">
+
+<input type="checkbox" value="Arroz Branco">
+
+🍚 Arroz Branco (+6)
+
+</label>
+
+<label class="extra">
+
+<input type="checkbox" value="Feijão Tropeiro">
+
+🥘 Feijão Tropeiro (+6)
+
+</label>
+
+<label class="extra">
+
+<input type="checkbox" value="Purê">
+
+🥔 Purê (+6)
+
+</label>
+
+<label class="extra">
+
+<input type="checkbox" value="Vinagrete">
+
+🥗 Vinagrete (+6)
+
+</label>
+
+<button class="send"
+onclick="confirmarAdicionais()">
+
+✅ Confirmar
+
+</button>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+import {
+
+getFirestore,
+collection,
+addDoc
+
+}
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+/* FIREBASE */
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyBWy83v0Q9M2GhZk_FRi4JWfvs_EGJ7WH4",
+
+authDomain: "esquina-grill-v2.firebaseapp.com",
+
+projectId: "esquina-grill-v2",
+
+storageBucket: "esquina-grill-v2.firebasestorage.app",
+
+messagingSenderId: "767057341995",
+
+appId: "1:767057341995:web:e4df055c70b25ad714446e"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+/* PRODUTOS */
+
+const produtos = [
+
+{
+
+nome:'Batata Simples',
+
+preco:20,
+
+categoria:'entradas',
+
+destino:'cozinha'
+
+},
+
+{
+
+nome:'Batata c/ bacon e cheddar',
+
+preco:30,
+
+categoria:'entradas',
+
+destino:'cozinha'
+
+},
+
+{
+
+nome:'Filé com fritas',
+
+preco:60,
+
+categoria:'entradas',
+
+destino:'ambos'
+
+},
+
+{
+
+nome:'Carne de sol c/macaxeira',
+
+preco:50,
+
+categoria:'entradas',
+
+destino:'ambos'
+
+},
+
+{
+
+nome:'Tabua de frios',
+
+preco:40,
+
+categoria:'entradas',
+
+destino:'cozinha'
+
+},
+
+{
+
+nome:'Meia tabua de frios',
+
+preco:20,
+
+categoria:'entradas',
+
+destino:'cozinha'
+
+},
+
+{
+
+nome:'Camarão alho e óleo',
+
+preco:65,
+
+categoria:'entradas',
+
+destino:'cozinha'
+
+},
+
+{
+
+nome:'Pão de alho',
+
+preco:5,
+
+categoria:'entradas',
+
+destino:'churrasqueira'
+
+},
+
+{
+
+nome:'Steak de picanha completo',
+
+preco:32,
+
+categoria:'espetosCompletos',
+
+destino:'ambos'
+
+},
+
+{
+
+nome:'Steak de contra filé completo',
+
+preco:27,
+
+categoria:'espetosCompletos',
+
+destino:'ambos'
+
+},
+
+{
+
+nome:'Steak de fraldinha completo',
+
+preco:26,
+
+categoria:'espetosCompletos',
+
+destino:'ambos'
+
+},
+
+{
+
+nome:'Steak de alcatra completo',
+
+preco:25,
+
+categoria:'espetosCompletos',
+
+destino:'ambos'
+
+},
+
+{
+
+nome:'Misto completo',
+
+preco:22,
+
+categoria:'espetosCompletos',
+
+destino:'ambos'
+
+},
+
+{
+
+nome:'Frango com bacon completo',
+
+preco:25,
+
+categoria:'espetosCompletos',
+
+destino:'ambos'
+
+},
+
+{
+
+nome:'Tulipa de frango completo',
+
+preco:20,
+
+categoria:'espetosCompletos',
+
+destino:'ambos'
+
+},
+
+{
+
+nome:'Steak de picanha',
+
+preco:15,
+
+categoria:'soEspetos',
+
+destino:'churrasqueira'
+
+},
+
+{
+
+nome:'Steak de contra filé',
+
+preco:15,
+
+categoria:'soEspetos',
+
+destino:'churrasqueira'
+
+},
+
+{
+
+nome:'Steak de fraldinha',
+
+preco:14,
+
+categoria:'soEspetos',
+
+destino:'churrasqueira'
+
+},
+
+{
+
+nome:'Steak de alcatra',
+
+preco:14,
+
+categoria:'soEspetos',
+
+destino:'churrasqueira'
+
+},
+
+{
+
+nome:'Misto',
+
+preco:12,
+
+categoria:'soEspetos',
+
+destino:'churrasqueira'
+
+},
+
+{
+
+nome:'Frango com bacon',
+
+preco:12,
+
+categoria:'soEspetos',
+
+destino:'churrasqueira'
+
+},
+
+{
+
+nome:'Tulipa de frango',
+
+preco:10,
+
+categoria:'soEspetos',
+
+destino:'churrasqueira'
+
+},
+
+{
+
+nome:'Original 600ml',
+
+preco:15,
+
+categoria:'cervejas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Skol 600ml',
+
+preco:13,
+
+categoria:'cervejas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Brahma 600ml',
+
+preco:13,
+
+categoria:'cervejas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Império 600ml',
+
+preco:13,
+
+categoria:'cervejas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Heineken Long Neck',
+
+preco:12,
+
+categoria:'cervejas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Corona Long Neck',
+
+preco:12,
+
+categoria:'cervejas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Corona Zero Long Neck',
+
+preco:12,
+
+categoria:'cervejas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Stella Long Neck',
+
+preco:12,
+
+categoria:'cervejas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Stella Gold Long Neck',
+
+preco:12,
+
+categoria:'cervejas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Budweiser Long Neck',
+
+preco:12,
+
+categoria:'cervejas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Império Long Neck',
+
+preco:12,
+
+categoria:'cervejas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Skol Beats',
+
+preco:12,
+
+categoria:'cervejas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Ice',
+
+preco:10,
+
+categoria:'cervejas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Chopp vinho',
+
+preco:18,
+
+categoria:'cervejas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Skol lata',
+
+preco:5,
+
+categoria:'cervejas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Caipijeva',
+
+preco:25,
+
+categoria:'drinks',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Caipirinha',
+
+preco:15,
+
+categoria:'drinks',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Refrigerante lata',
+
+preco:6,
+
+categoria:'bebidas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Refrigerante 600ml',
+
+preco:8,
+
+categoria:'bebidas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Refrigerante 1 litro',
+
+preco:12,
+
+categoria:'bebidas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Refrigerante 2 litros',
+
+preco:17,
+
+categoria:'bebidas',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Suco Maracujá',
+
+preco:7,
+
+categoria:'sucos',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Suco Acerola',
+
+preco:7,
+
+categoria:'sucos',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Suco Cupuaçu',
+
+preco:7,
+
+categoria:'sucos',
+
+destino:'balcao'
+
+},
+
+{
+
+nome:'Suco Laranja',
+
+preco:10,
+
+categoria:'sucos',
+
+destino:'balcao'
+
+},
+
+{
+nome:'Jarra de suco',
+preco:22,
+categoria:'sucos',
+destino:'balcao',
+
+sabores:[
+'Maracujá',
+'Acerola',
+'Cupuaçu'
+]
+
+},
+
+{
+
+nome:'Jarra de suco de laranja',
+
+preco:35,
+
+categoria:'sucos',
+
+destino:'balcao'
+
+},
+
+/* DOMINGO */
+
+{
+nome:'Galinha Caipira',
+
+preco:40,
+
+categoria:'domingo',
+
+destino:'cozinha'
+
+},
+
+{
+nome:'Feijoada',
+
+preco:38,
+
+categoria:'domingo',
+
+destino:'cozinha'
+
+},
+
+{
+nome:'Caranguejo',
+
+preco:38,
+
+categoria:'domingo',
+
+destino:'cozinha'
+
+},
+
+{
+nome:'Strogonoff de Frango',
+
+preco:30,
+
+categoria:'domingo',
+
+destino:'cozinha'
+
+},
+
+{
+nome:'Escondidinho de Carne Moída',
+
+preco:35,
+
+categoria:'domingo',
+
+destino:'cozinha'
+
+},
+
+{
+nome:'Lasanha à Bolonhesa',
+
+preco:38,
+
+categoria:'domingo',
+
+destino:'cozinha'
+
+},
+
+{
+nome:'Filé de Tilápia ao Molho Branco',
+
+preco:45,
+
+categoria:'domingo',
+
+destino:'cozinha'
+
+},
+
+{
+nome:'Arroz com Galinha',
+
+preco:30,
+
+categoria:'domingo',
+
+destino:'cozinha'
+
+},
+
+{
+nome:'Peixe no Saco',
+
+preco:120,
+
+categoria:'domingo',
+
+destino:'cozinha'
+
+},
+
+{
+nome:'Moqueca',
+
+preco:140,
+
+categoria:'domingo',
+
+destino:'cozinha'
+
+},
+
+/* SOBREMESAS */
+
+{
+
+nome:'Mousse de Maracujá',
+
+preco:14,
+
+categoria:'sobremesas',
+
+destino:'cozinha'
+
+},
+
+{
+
+nome:'Mousse de Maracujá com Chocolate',
+
+preco:15,
+
+categoria:'sobremesas',
+
+destino:'cozinha'
+
+},
+
+{
+
+nome:'Mousse de Morango',
+
+preco:14,
+
+categoria:'sobremesas',
+
+destino:'cozinha'
+
+},
+
+{
+
+nome:'Mousse de Morango com Chocolate',
+
+preco:15,
+
+categoria:'sobremesas',
+
+destino:'cozinha'
+
+},
+
+{
+
+nome:'Pudim de Leite',
+
+preco:10,
+
+categoria:'sobremesas',
+
+destino:'cozinha'
+
+},
+
+];
+
+/* VARIÁVEIS */
+
+let categoriaAtual = 'todos';
+
+let carrinho = [];
+
+let produtoTemporario = null;
+
+const lista =
+document.getElementById('listaProdutos');
+
+const itens =
+document.getElementById('itens');
+
+const totalDiv =
+document.getElementById('total');
+
+const cartText =
+document.getElementById('cartText');
+
+const status =
+document.getElementById('status');
+
+/* FILTRO */
+
+window.filtrarCategoria =
+function(categoria,botao){
+
+categoriaAtual = categoria;
+
+document.querySelectorAll('.cat')
+.forEach(btn=>{
+
+btn.classList.remove('active');
+
+});
+
+botao.classList.add('active');
+
+renderProdutos();
+
+}
+
+/* RENDER */
+
+function renderProdutos(){
+
+lista.innerHTML='';
+
+let listaFiltrada = [...produtos];
+
+if(categoriaAtual !== 'todos'){
+
+listaFiltrada =
+listaFiltrada.filter(
+p=>p.categoria === categoriaAtual
+);
+
+}
+
+listaFiltrada.forEach((produto)=>{
+
+lista.innerHTML += `
+
+<div class="card">
+
+<div class="info">
+
+<h3>${produto.nome}</h3>
+
+<div class="preco">
+
+R$ ${produto.preco.toFixed(2).replace('.',',')}
+
+</div>
+
+</div>
+
+<div class="controles">
+
+<button
+class="btn remove"
+onclick="remover('${produto.nome}')">
+
+-
+
+</button>
+
+<div class="qtd">
+
+${getQtd(produto.nome)}
+
+</div>
+
+<button
+class="btn add"
+onclick="adicionar('${produto.nome}')">
+
++
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+}
+
+/* ADICIONAR */
+
+window.adicionar = function(nome){
+
+const produto =
+produtos.find(
+p=>p.nome === nome
+);
+
+if(!produto) return;
+
+/* JARRA DE SUCO */
+
+if(produto.nome === 'Jarra de suco'){
+
+produtoSucoAtual = produto;
+
+abrirModalSuco();
+
+return;
+
+}
+
+/* COMPLETOS */
+
+if(produto.categoria === 'espetosCompletos'){
+
+produtoTemporario = produto;
+
+abrirAdicionais();
+
+return;
+
+}
+
+/* NORMAL */
+
+adicionarProduto(produto);
+
+}
+
+/* ADD PRODUTO */
+
+function adicionarProduto(produto){
+
+const item =
+carrinho.find(
+i=>
+i.nome === produto.nome
+&&
+JSON.stringify(i.adicionais || [])
+===
+JSON.stringify(produto.adicionais || [])
+);
+
+if(item){
+
+item.qtd++;
+
+}else{
+
+carrinho.push({
+
+...produto,
+qtd:1
+
+});
+
+}
+
+atualizarCarrinho();
+
+renderProdutos();
+
+}
+
+/* MODAL ADICIONAIS */
+
+window.abrirAdicionais = function(){
+
+document
+.getElementById('modalAdicionais')
+.classList.add('active');
+
+}
+
+window.fecharAdicionais = function(){
+
+document
+.getElementById('modalAdicionais')
+.classList.remove('active');
+
+}
+
+/* CONFIRMAR */
+
+window.confirmarAdicionais = function(){
+
+const checks =
+document.querySelectorAll(
+'#modalAdicionais input:checked'
+);
+
+let adicionais = [];
+
+checks.forEach(check=>{
+
+adicionais.push(check.value);
+
+});
+
+const precoExtras =
+adicionais.length * 6;
+
+const produtoFinal = {
+
+...produtoTemporario,
+
+preco:
+produtoTemporario.preco + precoExtras,
+
+adicionais
+
+};
+
+adicionarProduto(produtoFinal);
+
+document
+.querySelectorAll(
+'#modalAdicionais input'
+)
+.forEach(input=>{
+
+input.checked = false;
+
+});
+
+fecharAdicionais();
+
+}
+
+/* REMOVER */
+
+window.remover = function(nome){
+
+const item =
+carrinho.find(
+i=>i.nome === nome
+);
+
+if(item){
+
+item.qtd--;
+
+if(item.qtd <= 0){
+
+carrinho =
+carrinho.filter(
+i=>i !== item
+);
+
+}
+
+}
+
+atualizarCarrinho();
+
+renderProdutos();
+
+}
+
+/* QTD */
+
+function getQtd(nome){
+
+const qtd =
+carrinho
+.filter(i=>i.nome === nome)
+.reduce((acc,item)=>acc + item.qtd,0);
+
+return qtd;
+
+}
+
+/* CARRINHO */
+
+function atualizarCarrinho(){
+
+itens.innerHTML='';
+
+let total = 0;
+let qtdTotal = 0;
+
+carrinho.forEach(item=>{
+
+const subtotal =
+item.preco * item.qtd;
+
+total += subtotal;
+
+qtdTotal += item.qtd;
+
+itens.innerHTML += `
+
+<div class="item">
+
+<span>
+
+${item.nome}
+
+${
+item.adicionais
+&&
+item.adicionais.length > 0
+
+?
+
+'<br><small style="color:#d4a937;">+ '
++
+item.adicionais.join(', ')
++
+'</small>'
+
+:
+
+''
+
+}
+
+x${item.qtd}
+
+</span>
+
+<span>
+
+R$ ${subtotal.toFixed(2).replace('.',',')}
+
+</span>
+
+</div>
+
+`;
+
+});
+
+totalDiv.innerHTML =
+`R$ ${total.toFixed(2).replace('.',',')}`;
+
+cartText.innerHTML =
+`${qtdTotal} itens • R$ ${total.toFixed(2).replace('.',',')}`;
+
+}
+
+/* MODAL */
+
+window.abrirCarrinho = function(){
+
+document
+.getElementById('modal')
+.classList.add('active');
+
+}
+
+window.fecharCarrinho = function(){
+
+document
+.getElementById('modal')
+.classList.remove('active');
+
+}
+
+/* LIMPAR */
+
+window.limparCarrinho = function(){
+
+carrinho=[];
+
+atualizarCarrinho();
+
+renderProdutos();
+
+}
+
+/* ENVIAR */
+
+window.enviarPedido =
+async function(){
+
+const mesa =
+document.getElementById('mesa').value;
+
+if(!mesa){
+
+mostrarStatus(
+'Digite a mesa',
+'erro'
+);
+
+return;
+
+}
+
+if(carrinho.length===0){
+
+mostrarStatus(
+'Adicione itens',
+'erro'
+);
+
+return;
+
+}
+
+const total =
+carrinho.reduce(
+(acc,item)=>acc + item.preco * item.qtd,
+0
+);
+
+try{
+
+await addDoc(collection(db,'pedidos'),{
+
+mesa,
+
+itens:carrinho,
+
+total,
+
+status:'novo',
+
+impressaoCozinha:'pendente',
+
+impressaoChurrasqueira:'pendente',
+
+timestamp:Date.now(),
+
+horario:new Date()
+.toLocaleTimeString('pt-BR')
+
+});
+
+mostrarStatus(
+'Pedido enviado com sucesso!',
+'ok'
+);
+
+limparCarrinho();
+
+fecharCarrinho();
+
+document.getElementById('mesa').value='';
+
+}catch(e){
+
+mostrarStatus(
+'Erro ao enviar pedido',
+'erro'
+);
+
+console.log(e);
+
+}
+
+}
+
+/* STATUS */
+
+function mostrarStatus(texto,tipo){
+
+status.style.display='block';
+
+status.innerHTML = texto;
+
+status.className =
+'status ' + tipo;
+
+setTimeout(()=>{
+
+status.style.display='none';
+
+},3000);
+
+}
+/* VARIÁVEL SUCO */
+
+let produtoSucoAtual = null;
+
+/* MODAL SUCO */
+
+window.abrirModalSuco = function(){
+
+const saboresDiv =
+document.getElementById('saboresSuco');
+
+saboresDiv.innerHTML='';
+
+produtoSucoAtual.sabores.forEach(sabor=>{
+
+saboresDiv.innerHTML += `
+
+<button
+class="saborBtn"
+onclick="selecionarSabor('${sabor}')">
+
+${sabor}
+
+</button>
+
+`;
+
+});
+
+document
+.getElementById('modalSuco')
+.classList.add('active');
+
+}
+
+window.fecharModalSuco = function(){
+
+document
+.getElementById('modalSuco')
+.classList.remove('active');
+
+}
+
+window.selecionarSabor = function(sabor){
+
+const nomeFinal =
+'Jarra de suco - ' + sabor;
+
+const item =
+carrinho.find(
+i=>i.nome === nomeFinal
+);
+
+if(item){
+
+item.qtd++;
+
+}else{
+
+carrinho.push({
+
+...produtoSucoAtual,
+
+nome:nomeFinal,
+
+qtd:1
+
+});
+
+}
+
+atualizarCarrinho();
+
+renderProdutos();
+
+fecharModalSuco();
+
+}
+renderProdutos();
+
+</script>
+<!-- MODAL SUCO -->
+
+<div class="modal" id="modalSuco">
+
+<div class="modalTop">
+
+<h2>🧃 Escolha o sabor</h2>
+
+<button
+class="close"
+onclick="fecharModalSuco()">
+
+✕
+
+</button>
+
+</div>
+
+<div id="saboresSuco"></div>
+
+</div>
+</body>
+</html>
